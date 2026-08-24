@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Template. install.sh substitutes __NODE__ and __ROOT__ and writes the result
+  to ~/Library/LaunchAgents/. Do not install this file directly.
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.sasanka.dashboard</string>
+
+  <!-- Absolute node path: launchd gets a minimal PATH and cannot resolve nvm.
+       Re-run deploy/install.sh after switching node versions. -->
+  <key>ProgramArguments</key>
+  <array>
+    <string>__NODE__</string>
+    <string>__ROOT__/node_modules/next/dist/bin/next</string>
+    <string>start</string>
+    <string>-H</string>
+    <string>127.0.0.1</string>
+    <string>-p</string>
+    <string>3111</string>
+  </array>
+
+  <key>WorkingDirectory</key>
+  <string>__ROOT__</string>
+
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+
+  <key>StandardOutPath</key>
+  <string>__ROOT__/data/dashboard.log</string>
+  <key>StandardErrorPath</key>
+  <string>__ROOT__/data/dashboard.log</string>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>NODE_ENV</key>
+    <string>production</string>
+  </dict>
+
+  <!-- Background: lower scheduling priority, so the dashboard never competes
+       with foreground work on the machine it is measuring. -->
+  <key>ProcessType</key>
+  <string>Background</string>
+</dict>
+</plist>

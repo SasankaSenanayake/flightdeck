@@ -1,69 +1,140 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState } from 'react';
+import { AntigravityPanel } from '@/components/AntigravityPanel';
+import { ClaudeApiPanel } from '@/components/ClaudeApiPanel';
+import { ClaudeCodePanel } from '@/components/ClaudeCodePanel';
+import { NowCard } from '@/components/NowCard';
+import { WeatherCard } from '@/components/WeatherCard';
+import { PlanUsageCard } from '@/components/PlanUsageCard';
+import { SystemLiveRow } from '@/components/SystemLiveRow';
+import { SystemPanel } from '@/components/SystemPanel';
+import { SystemStatTiles } from '@/components/SystemStatTiles';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useLive } from '@/lib/useLive';
+import { bytes, pct, usd } from '@/lib/format';
+
+const TABS = [
+  { key: 'overview', label: 'Overview' },
+  { key: 'claude-code', label: 'Claude Code' },
+  { key: 'claude-api', label: 'Claude API' },
+  { key: 'system', label: 'System' },
+  { key: 'antigravity', label: 'Antigravity' },
+] as const;
+
+type Tab = (typeof TABS)[number]['key'];
+
+function HeadlineRow() {
+  const { data: cc } = useLive<{ today: { cost: number }; totals: { cost: number } }>('/api/claude-code', 60_000);
+  const { data: sys } = useLive<{
+    // null until the sampling streams produce their first row
+    memory: { pressurePct: number; used: number } | null;
+    cpu: { busy: number } | null;
+  }>('/api/system', 2000);
+  const { data: api } = useLive<{ configured: boolean; totals?: { billedCost: number | null; estimatedCost: number } }>(
+    '/api/claude-api?days=30',
+    60_000,
+  );
+  const { data: plan } = useLive<
+    | { available: false }
+    | { available: true; session: { pct: number }; weekly: { pct: number } }
+  >('/api/plan-usage', 60_000);
+
+  const items = [
+    {
+      label: 'Session used',
+      value: plan?.available ? pct(plan.session.pct) : '—',
+      sub: plan?.available ? `${pct(plan.weekly.pct)} weekly` : undefined,
+      color: plan?.available && plan.session.pct >= 90 ? 'var(--critical)' : plan?.available && plan.session.pct >= 70 ? 'var(--warning)' : 'var(--series-1)',
+    },
+    { label: 'Claude Code today', value: usd(cc?.today.cost ?? null), color: 'var(--series-2)' },
+    {
+      label: 'API this month',
+      value: api?.configured ? usd(api.totals?.billedCost ?? api.totals?.estimatedCost ?? 0) : '—',
+      color: 'var(--series-3)',
+    },
+    { label: 'CPU', value: sys?.cpu ? pct(sys.cpu.busy) : '—', color: 'var(--series-1)' },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {items.map((i) => (
+        <div key={i.label} className="rounded-xl border border-line bg-surface-1 px-4 py-3">
+          <div className="flex items-center gap-1.5">
+            <span aria-hidden className="size-1.5 rounded-full" style={{ background: i.color }} />
+            <span className="truncate text-[11px] text-ink-3">{i.label}</span>
+          </div>
+          <div className="num mt-1 text-lg font-semibold text-ink">{i.value}</div>
+          {i.sub && <div className="num text-[11px] text-ink-3">{i.sub}</div>}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      ))}
     </div>
+  );
+}
+
+export default function Page() {
+  const [tab, setTab] = useState<Tab>('overview');
+
+  return (
+    <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+      <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight text-ink">Ops Dashboard</h1>
+          <p className="mt-0.5 text-xs text-ink-3">Claude usage, machine health, and Antigravity activity</p>
+        </div>
+        <ThemeToggle />
+      </header>
+
+      <div className="mb-6">
+        <HeadlineRow />
+      </div>
+
+      <nav className="mb-5 flex gap-1 overflow-x-auto border-b border-line" aria-label="Sections">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            onClick={() => setTab(t.key)}
+            aria-current={tab === t.key ? 'page' : undefined}
+            className={`shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+              tab === t.key
+                ? 'border-s1 text-ink'
+                : 'border-transparent text-ink-3 hover:text-ink-2'
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </nav>
+
+      {tab === 'overview' && (
+        <div className="space-y-8">
+          <section>
+            <h2 className="mb-3 text-sm font-semibold text-ink-2">Today</h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <NowCard />
+              <WeatherCard />
+            </div>
+          </section>
+          <section>
+            <h2 className="mb-3 text-sm font-semibold text-ink-2">Claude Code</h2>
+            <div className="space-y-4">
+              <PlanUsageCard />
+              <SystemStatTiles />
+              <SystemLiveRow />
+              <ClaudeCodePanel showPlanUsage={false} />
+            </div>
+          </section>
+          <section>
+            <h2 className="mb-3 text-sm font-semibold text-ink-2">System</h2>
+            <SystemPanel showLiveRow={false} showStatTiles={false} />
+          </section>
+        </div>
+      )}
+      {tab === 'claude-code' && <ClaudeCodePanel />}
+      {tab === 'claude-api' && <ClaudeApiPanel />}
+      {tab === 'system' && <SystemPanel />}
+      {tab === 'antigravity' && <AntigravityPanel />}
+    </main>
   );
 }
