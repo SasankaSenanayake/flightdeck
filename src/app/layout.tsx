@@ -18,7 +18,7 @@ const firaCode = Fira_Code({
 });
 
 export const metadata: Metadata = {
-  title: "Ops Dashboard",
+  title: "Flightdeck",
   description: "Claude usage, machine health, and Antigravity activity",
 };
 

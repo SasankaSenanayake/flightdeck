@@ -1,8 +1,20 @@
 # Flightdeck
 
+[![License: MIT](https://img.shields.io/github/license/SasankaSenanayake/flightdeck)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/SasankaSenanayake/flightdeck?style=flat)](https://github.com/SasankaSenanayake/flightdeck/stargazers)
+![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)
+![macOS only](https://img.shields.io/badge/platform-macOS-lightgrey?logo=apple)
+
 A local dashboard for Claude usage, MacBook health, and Antigravity activity —
 the instrument panel for one machine. Runs on `127.0.0.1:3111` only, never
 exposed to the network.
+
+![Flightdeck overview screenshot — Claude plan quota, spend, weather, and system stats with sparklines](docs/hero.png)
+
+*Weather location shown is a demo value (San Francisco) for this screenshot —
+spend, quota %, and system stats are real, live numbers from the machine this
+was captured on.*
 
 Everything it shows is either read straight off your own disk (Claude Code's
 transcripts, the Claude desktop app's own usage cache, Antigravity's local

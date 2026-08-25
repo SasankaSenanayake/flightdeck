@@ -79,7 +79,7 @@ export default function Page() {
     <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-ink">Ops Dashboard</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-ink">Flightdeck</h1>
           <p className="mt-0.5 text-xs text-ink-3">Claude usage, machine health, and Antigravity activity</p>
         </div>
         <ThemeToggle />
