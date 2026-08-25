@@ -100,17 +100,6 @@ plan limits are enforced server-side and are not exposed to any local client, so
 there is no honest way to render "% of plan used" from transcripts alone — that
 number comes from the Plan limits panel above instead.
 
-### Claude API (paid)
-Nothing about API usage is stored locally, so this queries the Admin API
-(`/v1/organizations/usage_report/messages` and `/cost_report`), following
-`next_page` because `bucket_width=1d` caps a page at 31 buckets. Dollars come
-from the cost report when available; token-derived estimates are the fallback and
-are labeled as such.
-
-Set `ANTHROPIC_ADMIN_KEY` in `.env.local`. It must be an **Admin** key
-(`sk-ant-admin…`) created by an org owner at console.anthropic.com — a regular
-API key cannot read usage reports. Without one the panel renders a setup card.
-
 ### System
 Everything unprivileged; `powermetrics` needs sudo, so per-core power and
 thermals are out of scope.
@@ -179,7 +168,6 @@ tail -f data/dashboard.log
 
 | Variable | Purpose |
 |---|---|
-| `ANTHROPIC_ADMIN_KEY` | Admin key for the Claude API panel. Server-side only. |
 | `ANTIGRAVITY_LIVE_QUOTA` | `1` to attempt the live Antigravity quota lookup. |
 | `WEATHER_LOCATION` | Free-text city for the Weather widget, e.g. `"Richmond, England"`. |
 
@@ -197,8 +185,6 @@ runs. Polling is gated on `document.visibilityState`.
 
 - Binds to `127.0.0.1` only — never reachable from the network, verified with
   `lsof` after install.
-- Secrets (`ANTHROPIC_ADMIN_KEY`) never reach the browser — read server-side in
-  Next.js route handlers only.
 - `.env.local` and the SQLite database are gitignored; `.env.local.example`
   ships with every key blank.
 - Antigravity's cached Google access token, when the opt-in live-quota lookup

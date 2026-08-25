@@ -7,8 +7,6 @@ things are still worth knowing and reporting on if they break.
 
 ## What Flightdeck does with sensitive data
 
-- **`ANTHROPIC_ADMIN_KEY`** is read server-side only, in Next.js route
-  handlers, and never returned to the browser or logged.
 - **Antigravity's cached Google access token** (used only when
   `ANTIGRAVITY_LIVE_QUOTA=1`) is read from local IDE state, sent only to
   Google's own endpoint over HTTPS, and never logged, persisted, or included

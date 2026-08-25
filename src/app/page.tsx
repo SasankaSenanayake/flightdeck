@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { AntigravityPanel } from '@/components/AntigravityPanel';
-import { ClaudeApiPanel } from '@/components/ClaudeApiPanel';
 import { ClaudeCodePanel } from '@/components/ClaudeCodePanel';
 import { NowCard } from '@/components/NowCard';
 import { WeatherCard } from '@/components/WeatherCard';
@@ -12,12 +11,11 @@ import { SystemPanel } from '@/components/SystemPanel';
 import { SystemStatTiles } from '@/components/SystemStatTiles';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useLive } from '@/lib/useLive';
-import { bytes, pct, usd } from '@/lib/format';
+import { pct, usd } from '@/lib/format';
 
 const TABS = [
   { key: 'overview', label: 'Overview' },
   { key: 'claude-code', label: 'Claude Code' },
-  { key: 'claude-api', label: 'Claude API' },
   { key: 'system', label: 'System' },
   { key: 'antigravity', label: 'Antigravity' },
 ] as const;
@@ -31,10 +29,6 @@ function HeadlineRow() {
     memory: { pressurePct: number; used: number } | null;
     cpu: { busy: number } | null;
   }>('/api/system', 2000);
-  const { data: api } = useLive<{ configured: boolean; totals?: { billedCost: number | null; estimatedCost: number } }>(
-    '/api/claude-api?days=30',
-    60_000,
-  );
   const { data: plan } = useLive<
     | { available: false }
     | { available: true; session: { pct: number }; weekly: { pct: number } }
@@ -48,16 +42,11 @@ function HeadlineRow() {
       color: plan?.available && plan.session.pct >= 90 ? 'var(--critical)' : plan?.available && plan.session.pct >= 70 ? 'var(--warning)' : 'var(--series-1)',
     },
     { label: 'Claude Code today', value: usd(cc?.today.cost ?? null), color: 'var(--series-2)' },
-    {
-      label: 'API this month',
-      value: api?.configured ? usd(api.totals?.billedCost ?? api.totals?.estimatedCost ?? 0) : '—',
-      color: 'var(--series-3)',
-    },
     { label: 'CPU', value: sys?.cpu ? pct(sys.cpu.busy) : '—', color: 'var(--series-1)' },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {items.map((i) => (
         <div key={i.label} className="rounded-xl border border-line bg-surface-1 px-4 py-3">
           <div className="flex items-center gap-1.5">
@@ -132,7 +121,6 @@ export default function Page() {
         </div>
       )}
       {tab === 'claude-code' && <ClaudeCodePanel />}
-      {tab === 'claude-api' && <ClaudeApiPanel />}
       {tab === 'system' && <SystemPanel />}
       {tab === 'antigravity' && <AntigravityPanel />}
     </main>
