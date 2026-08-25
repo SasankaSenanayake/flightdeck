@@ -59,15 +59,28 @@ export function ClaudeCodePanel({ showPlanUsage = true }: { showPlanUsage?: bool
     return row;
   });
   const maxProject = Math.max(...data.byProject.map((p) => p.cost), 0);
+  const dailyCostSpark = data.daily.slice(-14).map((d) => d.cost);
+  const dailyRequestSpark = data.daily.slice(-14).map((d) => d.requests);
 
   return (
     <div className="space-y-4">
       {showPlanUsage && <PlanUsageCard />}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatTile label="Today" value={usd(data.today.cost)} hint={`${data.today.requests} requests · ${tokens(data.today.tokens)} tokens`} accent="var(--series-1)" />
+        <StatTile
+          label="Today"
+          value={usd(data.today.cost)}
+          hint={`${data.today.requests} requests · ${tokens(data.today.tokens)} tokens`}
+          accent="var(--series-1)"
+          spark={dailyCostSpark}
+        />
         <StatTile label="Total equivalent value" value={usd(t.cost)} hint={`${t.activeDays} active days · ${usd(t.avgCostPerActiveDay)}/day`} />
-        <StatTile label="Requests" value={t.uniqueRequests.toLocaleString()} hint={`${t.sessions} sessions · ${t.sidechainRequests} subagent`} />
+        <StatTile
+          label="Requests"
+          value={t.uniqueRequests.toLocaleString()}
+          hint={`${t.sessions} sessions · ${t.sidechainRequests} subagent`}
+          spark={dailyRequestSpark}
+        />
         <StatTile label="Cache read share" value={pct(t.cacheReadShare * 100, 1)} hint={`${tokens(t.totalTokens)} tokens total`} accent="var(--series-3)" />
       </div>
 
@@ -157,7 +170,7 @@ export function ClaudeCodePanel({ showPlanUsage = true }: { showPlanUsage?: bool
             </thead>
             <tbody>
               {data.sessions.slice(0, 12).map((s) => (
-                <tr key={s.sessionId} className="border-b border-line/60 last:border-0">
+                <tr key={s.sessionId} className="border-b border-line/60 transition-colors last:border-0 hover:bg-surface-2">
                   <td className="py-1.5 text-ink">{s.project}</td>
                   <td className="max-w-[120px] truncate py-1.5 text-ink-3">{s.branch ?? '—'}</td>
                   <td className="num py-1.5 text-right text-ink-2">{s.requests}</td>

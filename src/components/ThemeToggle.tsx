@@ -38,7 +38,7 @@ export function ThemeToggle() {
           type="button"
           onClick={() => setMode(o.key)}
           aria-pressed={mode === o.key}
-          className={`rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors ${
+          className={`cursor-pointer rounded-md px-2.5 py-1 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-s1 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-1 ${
             mode === o.key ? 'bg-surface-2 text-ink' : 'text-ink-3 hover:text-ink-2'
           }`}
         >

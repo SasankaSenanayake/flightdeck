@@ -102,7 +102,7 @@ export function SystemPanel({
               </thead>
               <tbody>
                 {(data?.processes ?? []).slice(0, 10).map((p) => (
-                  <tr key={p.pid} className="border-b border-line/60 last:border-0">
+                  <tr key={p.pid} className="border-b border-line/60 transition-colors last:border-0 hover:bg-surface-2">
                     <td className="max-w-[220px] truncate py-1.5 text-ink" title={p.name}>
                       {p.name}
                     </td>

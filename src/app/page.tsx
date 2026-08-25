@@ -96,7 +96,7 @@ export default function Page() {
             type="button"
             onClick={() => setTab(t.key)}
             aria-current={tab === t.key ? 'page' : undefined}
-            className={`shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+            className={`shrink-0 cursor-pointer border-b-2 px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-s1 focus-visible:ring-offset-2 focus-visible:ring-offset-surface-0 ${
               tab === t.key
                 ? 'border-s1 text-ink'
                 : 'border-transparent text-ink-3 hover:text-ink-2'

@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
+import { Sparkline } from './Sparkline';
 
 export function Card({
   title,
@@ -17,7 +18,7 @@ export function Card({
 }) {
   return (
     <section
-      className={`rounded-xl border border-line bg-surface-1 p-4 sm:p-5 ${className}`}
+      className={`card-enter rounded-xl border border-line bg-surface-1 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md sm:p-5 ${className}`}
     >
       {(title || right) && (
         <header className="mb-4 flex items-start justify-between gap-3">
@@ -39,12 +40,15 @@ export function StatTile({
   hint,
   accent,
   tone = 'default',
+  spark,
 }: {
   label: string;
   value: string;
   hint?: string;
   accent?: string;
   tone?: 'default' | 'good' | 'warning' | 'critical';
+  /** Optional recent-history trend, oldest first — renders as a compact sparkline. */
+  spark?: (number | null)[];
 }) {
   const toneColor =
     tone === 'good'
@@ -55,7 +59,7 @@ export function StatTile({
           ? 'var(--critical)'
           : undefined;
   return (
-    <div className="rounded-xl border border-line bg-surface-1 p-4">
+    <div className="card-enter rounded-xl border border-line bg-surface-1 p-4 shadow-sm transition-shadow duration-200 hover:shadow-md">
       <div className="flex items-center gap-2">
         {accent && (
           <span
@@ -73,6 +77,11 @@ export function StatTile({
         {value}
       </div>
       {hint && <div className="num mt-1 text-xs text-ink-3">{hint}</div>}
+      {spark && spark.filter((v) => v !== null).length >= 2 && (
+        <div className="mt-2.5 -mb-1">
+          <Sparkline data={spark} color={toneColor ?? accent ?? 'var(--series-1)'} />
+        </div>
+      )}
     </div>
   );
 }
