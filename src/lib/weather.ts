@@ -52,7 +52,7 @@ async function geocode(location: string): Promise<GeoResult> {
   // "City, Country" itself. Split off a trailing country and translate common
   // names/abbreviations to an ISO 3166-1 alpha-2 code via `countryCode`, which
   // disambiguates places that share a name across countries (there are real
-  // "Uxbridge"s in the UK, Massachusetts, and Ontario).
+  // "Richmond"s in London, Virginia, and British Columbia).
   const parts = location.split(',').map((s) => s.trim()).filter(Boolean);
   const cityQuery = parts[0] ?? location;
   const countryCode = parts.length > 1 ? countryToIso2(parts[parts.length - 1]) : null;

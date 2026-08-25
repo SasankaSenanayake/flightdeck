@@ -7,7 +7,7 @@
 <plist version="1.0">
 <dict>
   <key>Label</key>
-  <string>com.sasanka.dashboard</string>
+  <string>com.sasanka.flightdeck</string>
 
   <!-- Absolute node path: launchd gets a minimal PATH and cannot resolve nvm.
        Re-run deploy/install.sh after switching node versions. -->
